@@ -59,7 +59,6 @@ class CoopController:
 
         if smart_switch_period:
             smart_switched = True
-            self.switch_controller.number_of_smart_switches += 1 
             if active_radio_sensed_channel_state == OCCUPIED:
                 self.switch_controller.smart_switch_channel_for_radio_unit(
                     all_radio_units=self.radio_units,
@@ -71,7 +70,6 @@ class CoopController:
                 pass
         
         if not smart_switched:
-            self.switch_controller.number_of_smart_switches = 0
             self.immediate_switch_channel_for_all_radio_units()
 
         return smart_switched

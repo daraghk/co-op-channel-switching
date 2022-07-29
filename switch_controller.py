@@ -9,27 +9,14 @@ UNKNOWN = 2
 
 
 class SwitchController:
-    def __init__(self):
-        self.number_of_smart_switches = 0
-        self.random_switch_step = 10
-
     def smart_switch_channel_for_radio_unit(self, all_radio_units, active_radio_index, joint_channel_value_map, channel_caches, number_of_channels):
         """Given all radio units, find its best channel to switch to, i.e most likely to be empty and switch.
         This channel could already be owned by a passive radio unit, 
         in this case the active and passive radio units swap sensing channels."""
         active_radio_unit = all_radio_units[active_radio_index]
         current_sensed_channel = active_radio_unit.sensing_channel
-        
-        best_channel = current_sensed_channel
-        if self.number_of_smart_switches % self.random_switch_step == 0:
-            print("RANDOM SMART SWITCH", self.number_of_smart_switches)
-            best_channel = random.randint(0, number_of_channels - 1)
-        else:
-            best_channel = self.find_best_channel_to_switch_to(
-                current_sensed_channel, joint_channel_value_map, channel_caches, number_of_channels)
-
-        # best_channel = self.find_best_channel_to_switch_to(
-        #     current_sensed_channel, joint_channel_value_map, channel_caches, number_of_channels)
+        best_channel = self.find_best_channel_to_switch_to(
+            current_sensed_channel, joint_channel_value_map, channel_caches, number_of_channels)
 
         for radio_unit in all_radio_units:
             if radio_unit.sensing_channel == best_channel:
