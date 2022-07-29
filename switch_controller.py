@@ -164,6 +164,5 @@ class TestCalculationFunctions(unittest.TestCase):
         self.switch_controller.smart_switch_channel_for_radio_unit(all_radio_units=all_radio_units, active_radio_index=active_radio_unit_index,
                                                                                                    joint_channel_value_map=channel_value_map, channel_caches=channel_caches, number_of_channels=number_of_channels)
 
-        # ***Below tests are brittle due to the random nature introduced into smart switching***
         self.assertNotEqual(
             all_radio_units[active_radio_unit_index].sensing_channel, 0)
