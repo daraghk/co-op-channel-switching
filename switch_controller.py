@@ -1,41 +1,40 @@
 import random
 import unittest
+from channel_caches import EMPTY, UNKNOWN
 from radio_unit import RadioUnit
-
-'''Channel Occupancy Constants'''
-EMPTY = 0
-OCCUPIED = 1
-UNKNOWN = 2
 
 
 class SwitchController:
     def __init__(self):
         self.number_of_smart_switches = 0
-        self.random_switch_step = 10
+        self.random_smart_switch_mod_criteria = 10
 
     def smart_switch_channel_for_radio_unit(self, all_radio_units, active_radio_index, joint_channel_value_map, channel_caches, number_of_channels):
-        """Given all radio units, find its best channel to switch to, i.e most likely to be empty and switch.
+        """Given all radio units, find the active radio's best channel to switch to, 
+        i.e most likely to be empty and switch (if it is not a random smart switch).
         This channel could already be owned by a passive radio unit, 
         in this case the active and passive radio units swap sensing channels."""
         active_radio_unit = all_radio_units[active_radio_index]
         current_sensed_channel = active_radio_unit.sensing_channel
-        
-        best_channel = current_sensed_channel
-        if self.number_of_smart_switches % self.random_switch_step == 0:
-            print("RANDOM SMART SWITCH", self.number_of_smart_switches)
+
+        best_channel = None
+        if self.__is_random_smart_switch():
+            print("RANDOM SMART SWITCH")
             best_channel = random.randint(0, number_of_channels - 1)
+            while best_channel == current_sensed_channel:
+                best_channel = random.randint(0, number_of_channels - 1)
         else:
             best_channel = self.find_best_channel_to_switch_to(
                 current_sensed_channel, joint_channel_value_map, channel_caches, number_of_channels)
-
-        # best_channel = self.find_best_channel_to_switch_to(
-        #     current_sensed_channel, joint_channel_value_map, channel_caches, number_of_channels)
 
         for radio_unit in all_radio_units:
             if radio_unit.sensing_channel == best_channel:
                 radio_unit.sensing_channel = current_sensed_channel
                 break
         active_radio_unit.sensing_channel = best_channel
+
+    def __is_random_smart_switch(self):
+        return self.number_of_smart_switches % self.random_smart_switch_mod_criteria == 0
 
     def find_best_channel_to_switch_to(self, current_sensed_channel, joint_channel_value_map, channel_caches, number_of_channels):
         """ For each channel in the joint_channel_value_map that is unknown at (t),
@@ -163,9 +162,8 @@ class TestCalculationFunctions(unittest.TestCase):
         self.assertEqual(
             all_radio_units[active_radio_unit_index].sensing_channel, 0)
         self.switch_controller.smart_switch_channel_for_radio_unit(all_radio_units=all_radio_units, active_radio_index=active_radio_unit_index,
-                                                                   joint_channel_value_map=channel_value_map, channel_caches=channel_caches, number_of_channels=number_of_channels)
-        self.assertEqual(
-            all_radio_units[active_radio_unit_index].sensing_channel, 1)
-        # we know from how the radios were created, that 1 was previously owned by radio unit 1
-        # therefore need to check if this now owns channel 0
-        self.assertEqual(all_radio_units[1].sensing_channel, 0)
+                                                                                                   joint_channel_value_map=channel_value_map, channel_caches=channel_caches, number_of_channels=number_of_channels)
+
+        # ***Below tests are brittle due to the random nature introduced into smart switching***
+        self.assertNotEqual(
+            all_radio_units[active_radio_unit_index].sensing_channel, 0)

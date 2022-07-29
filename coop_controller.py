@@ -51,25 +51,27 @@ class CoopController:
         If in smart switch period and channel is empty then continue on this channel
         Else immediate switch all radio unit channels"""
         active_radio_unit = self.radio_units[self.monitored_radio_unit]
-        joint_channel_value_map = self.__create_joint_channel_value_map(current_sensed_values)
+        joint_channel_value_map = self.__create_joint_channel_value_map(
+            current_sensed_values)
 
         smart_switched = False
-        active_radio_sensed_channel_state = joint_channel_value_map[active_radio_unit.sensing_channel]
+        active_radio_sensed_channel_state = joint_channel_value_map[
+            active_radio_unit.sensing_channel]
         smart_switch_period = self.channel_caches.size >= self.min_channel_cache_size
 
         if smart_switch_period:
             smart_switched = True
-            self.switch_controller.number_of_smart_switches += 1 
+            self.switch_controller.number_of_smart_switches += 1
             if active_radio_sensed_channel_state == OCCUPIED:
                 self.switch_controller.smart_switch_channel_for_radio_unit(
-                    all_radio_units=self.radio_units,
-                    active_radio_index=self.monitored_radio_unit,
-                    joint_channel_value_map=joint_channel_value_map,
-                    channel_caches=self.channel_caches.channel_caches,
-                    number_of_channels=self.number_of_channels)
-            elif active_radio_sensed_channel_state == EMPTY: 
+                        all_radio_units=self.radio_units,
+                        active_radio_index=self.monitored_radio_unit,
+                        joint_channel_value_map=joint_channel_value_map,
+                        channel_caches=self.channel_caches.channel_caches,
+                        number_of_channels=self.number_of_channels)
+            elif active_radio_sensed_channel_state == EMPTY:
                 pass
-        
+
         if not smart_switched:
             self.switch_controller.number_of_smart_switches = 0
             self.immediate_switch_channel_for_all_radio_units()
@@ -79,7 +81,7 @@ class CoopController:
     def __create_joint_channel_value_map(self, current_sensed_values):
         joint_channel_value_map = current_sensed_values.copy()
         for channel in range(self.number_of_channels):
-             if channel not in joint_channel_value_map:
+            if channel not in joint_channel_value_map:
                 joint_channel_value_map[channel] = UNKNOWN
         return joint_channel_value_map
 
@@ -172,21 +174,22 @@ class TestCoopController(unittest.TestCase):
                          original_monitored_radio_unit_channel + 1)
 
     def test_trigger_radio_unit_smart_switch(self):
-        traffic = [[1, 0, 0, 1, 0, 1], 
-        [0, 1, 0, 0, 1, 1], 
-        [1, 0, 0, 1, 1, 1], 
-        [1, 0, 0, 1, 0, 1], 
-        [1, 0, 0, 1, 1, 1], 
-        [0, 1, 0, 1, 0, 1], 
-        [1, 0, 1, 1, 1, 1], 
-        [0, 0, 1, 0, 0, 1],
-        [1, 1, 0, 1, 1, 1],
-        [0, 0, 0, 1, 0, 1]]
+        traffic = [[1, 0, 0, 1, 0, 1],
+                   [0, 1, 0, 0, 1, 1],
+                   [1, 0, 0, 1, 1, 1],
+                   [1, 0, 0, 1, 0, 1],
+                   [1, 0, 0, 1, 1, 1],
+                   [0, 1, 0, 1, 0, 1],
+                   [1, 0, 1, 1, 1, 1],
+                   [0, 0, 1, 0, 0, 1],
+                   [1, 1, 0, 1, 1, 1],
+                   [0, 0, 0, 1, 0, 1]]
 
         for current_traffic in traffic:
             sensed_channel_values = self.coop_controller.get_current_sensed_channel_values_from_radio_units(
-            current_traffic)
-            self.coop_controller.add_all_current_channel_values_to_cache_including_unknowns(sensed_channel_values)
+                current_traffic)
+            self.coop_controller.add_all_current_channel_values_to_cache_including_unknowns(
+                sensed_channel_values)
             self.coop_controller.immediate_switch_channel_for_all_radio_units()
 
         # radio unit channels are now 4 and 5, with monitored being 4
@@ -198,12 +201,15 @@ class TestCoopController(unittest.TestCase):
 
         latest_traffic_line = [1, 0, 1, 1, 1, 1]
         # sensed values are {4:1, 5:1}
-        sensed_channel_values = self.coop_controller.get_current_sensed_channel_values_from_radio_units(latest_traffic_line)
+        sensed_channel_values = self.coop_controller.get_current_sensed_channel_values_from_radio_units(
+            latest_traffic_line)
         self.coop_controller.trigger_radio_unit_switching(
             sensed_channel_values)
 
         new_monitored_radio_unit_channel = self.coop_controller.radio_units[
             self.coop_controller.monitored_radio_unit].sensing_channel
-        self.assertTrue(original_monitored_radio_unit_channel != new_monitored_radio_unit_channel)
-        self.assertTrue(new_monitored_radio_unit_channel != original_monitored_radio_unit_channel + 1)
+        self.assertTrue(original_monitored_radio_unit_channel !=
+                        new_monitored_radio_unit_channel)
+        self.assertTrue(new_monitored_radio_unit_channel !=
+                        original_monitored_radio_unit_channel + 1)
         self.assertEqual(new_monitored_radio_unit_channel, 0)
