@@ -65,7 +65,7 @@ class SwitchController:
 
     def calculate_conditional_probability(self, channel_to_check, joint_channel_value_map, channel_caches):
         """ Calculates the conditional probability that channel_to_check at (t+1) is EMPTY, 
-        given the joint channel_value_map for (t)"""
+        given the joint_channel_value_map for (t)"""
         numerator = 0
         denominator = 0
         last_channel_cache_index = len(channel_caches) - 1
