@@ -18,7 +18,7 @@ generated_channel_traffics = create_set_of_channel_traffics_with_changing_biases
 channel_traffic_data = AirTrafficData(generated_channel_traffics)
 coop_layer = CoopController(number_of_radio_units=1,
                             number_of_channels=4,
-                            max_channel_cache_size=1024
+                            max_channel_cache_size=1024,
                             min_channel_cache_size=32)
 
 
