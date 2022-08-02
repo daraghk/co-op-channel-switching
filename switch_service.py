@@ -4,7 +4,7 @@ from channel_caches import EMPTY, UNKNOWN
 from radio_unit import RadioUnit
 
 
-class SwitchController:
+class SwitchService:
     def __init__(self):
         self.number_of_smart_switches = 0
         self.random_smart_switch_mod_criteria = 10
@@ -103,7 +103,7 @@ class SwitchController:
 
 class TestCalculationFunctions(unittest.TestCase):
     def setUp(self):
-        self.switch_controller = SwitchController()
+        self.switch_controller = SwitchService()
 
     def test_joint_channel_values_count(self):
         channel_caches = [[1, 0, 1], [1, 0, 0], [0, 0, 1]]

@@ -1,7 +1,7 @@
 import unittest
 from channel_caches import EMPTY, OCCUPIED, UNKNOWN, ChannelCaches
 from radio_unit import RadioUnit
-from switch_controller import SwitchController
+from switch_service import SwitchService
 
 
 class CoopController:
@@ -17,7 +17,7 @@ class CoopController:
         self.radio_units = self.__init_radio_units()
         self.channel_caches = ChannelCaches(
             number_of_channels=number_of_channels, max_size=max_channel_cache_size)
-        self.switch_controller = SwitchController()
+        self.switch_controller = SwitchService()
 
         self.monitored_radio_unit = 0
         assert(max_channel_cache_size % min_channel_cache_size == 0)
