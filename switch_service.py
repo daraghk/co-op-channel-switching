@@ -7,15 +7,18 @@ from radio_unit import RadioUnit
 class SwitchService:
     def __init__(self):
         self.number_of_smart_switches = 0
-        self.random_smart_switch_mod_criteria = 10
+        self.correct_smart_switch_count = 0
+        self.incorrect_smart_switch_count = 0
+        self.random_smart_switch_mod_criteria = 50
 
     def smart_switch_channel_for_radio_unit(self, all_radio_units, active_radio_index, joint_channel_value_map, channel_caches, number_of_channels):
         """Given all radio units, find the active radio's best channel to switch to, 
-        i.e most likely to be empty and switch (if it is not a random smart switch).
+        i.e most likely to be empty (if it is not a random smart switch).
         This channel could already be owned by a passive radio unit, 
         in this case the active and passive radio units swap sensing channels."""
         active_radio_unit = all_radio_units[active_radio_index]
         current_sensed_channel = active_radio_unit.sensing_channel
+        self.__set_random_smart_switch_likelihood()
 
         best_channel = None
         if self.__is_random_smart_switch():
@@ -33,8 +36,23 @@ class SwitchService:
                 break
         active_radio_unit.sensing_channel = best_channel
 
+    def __calculate_correct_smart_switch_proportion(self):
+        numerator = self.correct_smart_switch_count
+        denominator = self.correct_smart_switch_count + self.incorrect_smart_switch_count
+        return numerator / denominator if denominator > 0 else 0
+
     def __is_random_smart_switch(self):
         return self.number_of_smart_switches % self.random_smart_switch_mod_criteria == 0
+
+    def __set_random_smart_switch_likelihood(self):
+        """If the proportion of current correct smart switches is less than 50%
+        then make random switching occurrence more likely
+        else keep random swithcing occurrence less likely"""
+        correct_switch_proportion = self.__calculate_correct_smart_switch_proportion()
+        if correct_switch_proportion < 0.5:
+            self.random_smart_switch_mod_criteria = 1
+        else:
+            self.random_smart_switch_mod_criteria = 50
 
     def find_best_channel_to_switch_to(self, current_sensed_channel, joint_channel_value_map, channel_caches, number_of_channels):
         """ For each channel in the joint_channel_value_map that is unknown at (t),

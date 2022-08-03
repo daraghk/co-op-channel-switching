@@ -3,8 +3,8 @@ from traffic_generator import create_set_of_channel_traffics_where_half_the_chan
 from air_traffic_data import AirTrafficData
 from coop_controller import CoopController
 
-number_of_zero_biased_channels = 2
-number_of_one_biased_channels = 2
+number_of_zero_biased_channels = 4
+number_of_one_biased_channels = 4
 
 generated_channel_traffics = create_set_of_channel_traffics_with_changing_biases_at_fixed_intervals(
     0.1, 0.9, number_of_zero_biased_channels, number_of_one_biased_channels, switch_traffic_bias_interval=10)
@@ -17,7 +17,7 @@ generated_channel_traffics = create_set_of_channel_traffics_with_changing_biases
 
 channel_traffic_data = AirTrafficData(generated_channel_traffics)
 coop_layer = CoopController(number_of_radio_units=1,
-                            number_of_channels=4,
+                            number_of_channels=8,
                             max_channel_cache_size=1024,
                             min_channel_cache_size=32)
 
