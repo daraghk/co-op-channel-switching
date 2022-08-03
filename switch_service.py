@@ -4,7 +4,7 @@ from channel_caches import EMPTY, UNKNOWN
 from radio_unit import RadioUnit
 
 
-class SwitchController:
+class SwitchService:
     def __init__(self):
         self.number_of_smart_switches = 0
         self.random_smart_switch_mod_criteria = 10
@@ -103,26 +103,26 @@ class SwitchController:
 
 class TestCalculationFunctions(unittest.TestCase):
     def setUp(self):
-        self.switch_controller = SwitchController()
+        self.switch_service = SwitchService()
 
     def test_joint_channel_values_count(self):
         channel_caches = [[1, 0, 1], [1, 0, 0], [0, 0, 1]]
         channel_value_map = {0: 1, 1: 0}
-        result = self.switch_controller.joint_channel_values_count(
+        result = self.switch_service.joint_channel_values_count(
             channel_caches, channel_value_map)
         self.assertEqual(result, 2)
 
     def test_joint_channel_values_count_empty(self):
         channel_caches = [[1, 0, 1], [1, 0, 0], [0, 0, 1]]
         channel_value_map = {0: 4, 1: 5}
-        result = self.switch_controller.joint_channel_values_count(
+        result = self.switch_service.joint_channel_values_count(
             channel_caches, channel_value_map)
         self.assertEqual(result, 0)
 
     def test_calculate_conditional_probability(self):
         channel_caches = [[1, 0, 1], [0, 0, 1], [0, 1, 0], [1, 0, 1]]
         channel_value_map = {1: 0, 2: 1}
-        result = self.switch_controller.calculate_conditional_probability(
+        result = self.switch_service.calculate_conditional_probability(
             channel_to_check=0, joint_channel_value_map=channel_value_map, channel_caches=channel_caches)
         self.assertEqual(result, 2/3.)
 
@@ -132,7 +132,7 @@ class TestCalculationFunctions(unittest.TestCase):
         channel_value_map = {0: 2, 1: 0, 2: 1, 3: 2}
         number_of_channels = 4
         current_sensed_channel = 0
-        result = self.switch_controller.find_best_channel_to_switch_to(
+        result = self.switch_service.find_best_channel_to_switch_to(
             current_sensed_channel, channel_value_map, channel_caches, number_of_channels)
         self.assertEqual(result, 1)
 
@@ -142,7 +142,7 @@ class TestCalculationFunctions(unittest.TestCase):
         channel_value_map = {0: 2, 1: 1, 2: 1, 3: 2}
         number_of_channels = 4
         current_sensed_channel = 0
-        result = self.switch_controller.find_best_channel_to_switch_to(
+        result = self.switch_service.find_best_channel_to_switch_to(
             current_sensed_channel, channel_value_map, channel_caches, number_of_channels)
         self.assertEqual(result, 0)
 
@@ -161,7 +161,7 @@ class TestCalculationFunctions(unittest.TestCase):
 
         self.assertEqual(
             all_radio_units[active_radio_unit_index].sensing_channel, 0)
-        self.switch_controller.smart_switch_channel_for_radio_unit(all_radio_units=all_radio_units, active_radio_index=active_radio_unit_index,
+        self.switch_service.smart_switch_channel_for_radio_unit(all_radio_units=all_radio_units, active_radio_index=active_radio_unit_index,
                                                                                                    joint_channel_value_map=channel_value_map, channel_caches=channel_caches, number_of_channels=number_of_channels)
 
         self.assertNotEqual(

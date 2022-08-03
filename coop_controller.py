@@ -1,7 +1,7 @@
 import unittest
 from channel_caches import EMPTY, OCCUPIED, UNKNOWN, ChannelCaches
 from radio_unit import RadioUnit
-from switch_controller import SwitchController
+from switch_service import SwitchService
 
 
 class CoopController:
@@ -17,7 +17,7 @@ class CoopController:
         self.radio_units = self.__init_radio_units()
         self.channel_caches = ChannelCaches(
             number_of_channels=number_of_channels, max_size=max_channel_cache_size)
-        self.switch_controller = SwitchController()
+        self.switch_service = SwitchService()
 
         self.monitored_radio_unit = 0
         assert(max_channel_cache_size % min_channel_cache_size == 0)
@@ -38,7 +38,7 @@ class CoopController:
 
     def immediate_switch_channel_for_all_radio_units(self):
         """Increments all radio unit sensing channel numbers by 1 """
-        self.switch_controller.immediate_switch_channel_for_all_radio_units(
+        self.switch_service.immediate_switch_channel_for_all_radio_units(
             self.radio_units, self.number_of_channels)
 
     def add_all_current_channel_values_to_cache_including_unknowns(self, sensed_channel_values):
@@ -61,9 +61,9 @@ class CoopController:
 
         if smart_switch_period:
             smart_switched = True
-            self.switch_controller.number_of_smart_switches += 1
+            self.switch_service.number_of_smart_switches += 1
             if active_radio_sensed_channel_state == OCCUPIED:
-                self.switch_controller.smart_switch_channel_for_radio_unit(
+                self.switch_service.smart_switch_channel_for_radio_unit(
                         all_radio_units=self.radio_units,
                         active_radio_index=self.monitored_radio_unit,
                         joint_channel_value_map=joint_channel_value_map,
@@ -73,7 +73,7 @@ class CoopController:
                 pass
 
         if not smart_switched:
-            self.switch_controller.number_of_smart_switches = 0
+            self.switch_service.number_of_smart_switches = 0
             self.immediate_switch_channel_for_all_radio_units()
 
         return smart_switched
