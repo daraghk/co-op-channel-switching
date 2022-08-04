@@ -1,4 +1,5 @@
 import random
+from crawdad_dataset_reader import set_up_data
 from traffic_generator import create_set_of_channel_traffics_where_half_the_channels_change_bias_at_random_intervals, create_set_of_channel_traffics_with_changing_biases_at_fixed_intervals, create_set_of_channel_traffics_with_fixed_biases
 from air_traffic_data import AirTrafficData
 from coop_controller import CoopController
@@ -6,8 +7,8 @@ from coop_controller import CoopController
 number_of_zero_biased_channels = 2
 number_of_one_biased_channels = 2
 
-generated_channel_traffics = create_set_of_channel_traffics_with_changing_biases_at_fixed_intervals(
-    0.1, 0.9, number_of_zero_biased_channels, number_of_one_biased_channels, switch_traffic_bias_interval=10)
+# generated_channel_traffics = create_set_of_channel_traffics_with_changing_biases_at_fixed_intervals(
+#     0.1, 0.9, number_of_zero_biased_channels, number_of_one_biased_channels, switch_traffic_bias_interval=10)
 
 # generated_channel_traffics = create_set_of_channel_traffics_with_fixed_biases(
 #     0.1, 0.9, number_of_zero_biased_channels, number_of_one_biased_channels)
@@ -15,11 +16,12 @@ generated_channel_traffics = create_set_of_channel_traffics_with_changing_biases
 # generated_channel_traffics = create_set_of_channel_traffics_where_half_the_channels_change_bias_at_random_intervals(
 #     0.1, 0.9, number_of_biased_one_channels=number_of_one_biased_channels, number_of_biased_zero_channels=number_of_zero_biased_channels, traffic_length=10000)
 
-channel_traffic_data = AirTrafficData(generated_channel_traffics)
+# channel_traffic_data = AirTrafficData(generated_channel_traffics)
+channel_traffic_data = set_up_data()
 coop_layer = CoopController(number_of_radio_units=1,
-                            number_of_channels=4,
-                            max_channel_cache_size=1024,
-                            min_channel_cache_size=32)
+                            number_of_channels=14,
+                            max_channel_cache_size=1022,
+                            min_channel_cache_size=73)
 
 
 def debug_print(current_traffic, current_sensed_values, channel_caches, cache_shape, cache_size):
@@ -86,4 +88,4 @@ print("CORRECT SMART PROPORTION: ", proportion_correct_of_total_smart_switches)
 print("CORRECT SMART PROPORTION, ignore dead ends: ", proportion_correct_of_total_smart_switches_ignoring_no_zero_choices)
 print("CORRECT RANDOM PROPORTION: ", proportion_random_correct_of_total_smart_switches)
 print(channel_traffic_data.number_of_timesteps)
-print(len(generated_channel_traffics[0]))
+# print(len(generated_channel_traffics[0]))
